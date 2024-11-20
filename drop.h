@@ -1,6 +1,7 @@
 #ifndef _MD_DROP_H
 #define _MD_DROP_H
 
+#include "buzzer.h"
 #include <Ds1302.h>
 #include <ESP32Servo.h>
 
@@ -35,12 +36,13 @@ private:
   DropControllerState state;
   Ds1302& rtc;
   Servo& servo;
+  BuzzerController& buzzer_controller;
 
   void calculate_next();
   void load();
   void save();
 public:
-  DropController(Ds1302& rtc, Servo& servo);
+  DropController(Ds1302& rtc, Servo& servo, BuzzerController& buzzer_controller);
   void init();
   void drop();
   void update();

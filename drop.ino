@@ -7,7 +7,7 @@ bool time_greater(Ds1302::DateTime time, Ds1302::DateTime next) {
     || (next.hour == time.hour && next.minute == time.minute && next.second > time.second);
 }
 
-DropController::DropController(Ds1302& rtc, Servo& servo) : rtc(rtc), servo(servo) {
+DropController::DropController(Ds1302& rtc, Servo& servo, BuzzerController& buzzer_controller) : rtc(rtc), servo(servo), buzzer_controller(buzzer_controller) {
   this->count = 0;
   this->dropped = false;
   this->dropped_since = 0;
@@ -116,7 +116,8 @@ void DropController::update() {
         this->timeout_since = millis();
         this->fails = 0;
         this->drop();
-        // play buzzer
+        this->buzzer_controller.play();
+        
         // read pet
         this->state = DropControllerState::DROPPED;
       }
@@ -147,7 +148,7 @@ void DropController::update() {
       if (this->fails >= 3) {
         this->state = DropControllerState::IDLE;
       } else {
-        // play buzzer
+        this->buzzer_controller.play();
         this->timeout_since = millis();
         this->state = DropControllerState::DROPPED;
       }
