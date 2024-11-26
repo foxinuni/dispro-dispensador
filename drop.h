@@ -6,8 +6,8 @@
 #include <ESP32Servo.h>
 
 #define SCHEDULE_MAX 5
-#define SERVO_MAX 90
-#define SERVO_MIN 0
+#define SERVO_MAX 48
+#define SERVO_MIN 20
 #define DROP_TIME 2000
 #define TIMEOUT 30000
 

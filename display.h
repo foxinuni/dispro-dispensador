@@ -2,6 +2,7 @@
 #define DISPLAY_H
 
 #include <Ds1302.h>
+#include <SevSeg.h>
 
 #define SEG_A 0
 #define SEG_B 1
@@ -14,16 +15,13 @@
 
 class SegmentDisplay {
 private:
-    int* digits_pins;
-    int* segment_pins;
     Ds1302& rtc;
+    SevSeg& sevseg;
 
 public:
-    SegmentDisplay(Ds1302& rtc, int digits_pins[4], int segment_pins[8]);
-
-    void init();
+    SegmentDisplay(Ds1302& rtc, SevSeg& sevseg);
+    void init(unsigned char digits[4], unsigned char segments[8]);
     void update();
-    void set_digit(int index, int value);
 };
 
 #endif

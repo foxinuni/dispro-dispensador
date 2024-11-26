@@ -51,6 +51,7 @@ public:
         should_play = false;
     }
 
+    void init();
     void play();
     void update();
 };

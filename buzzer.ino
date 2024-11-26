@@ -3,9 +3,14 @@
 #include <driver/ledc.h>
 #include <esp_err.h>
 
+void BuzzerController::init() {
+    if (!ledcAttachChannel(pin, 500, 7, LEDC_CHANNEL_5)) {
+      Serial.println("Failed to attach buzzer pin");
+    } 
+}
 
 void BuzzerController::play() {
-    //should_play = true;
+    should_play = true;
 }
 
 void BuzzerController::update() {
@@ -20,7 +25,9 @@ void BuzzerController::update() {
             break;
         case BuzzerControllerState::NEXT_NOTE:
             if (note < notes) {
-                //ledcWriteNote(pin, melody[note].frecuency, 8);
+                ledcWriteTone(pin, melody[note].frecuency);
+
+                //tone(pin, melody[note].frecuency);
 
                 time = prev = millis();
                 state = BuzzerControllerState::AWAIT_NOTE;
@@ -31,7 +38,9 @@ void BuzzerController::update() {
             break;
         case BuzzerControllerState::AWAIT_NOTE:
             if (millis() - time >= melody[note].length) {
-                //ledcWriteNote(pin, 0, 8);
+                ledcWriteTone(pin, 0);
+
+                //noTone(pin);
                 note++;
                 state = BuzzerControllerState::NEXT_NOTE;
             }

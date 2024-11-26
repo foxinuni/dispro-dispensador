@@ -1,6 +1,7 @@
 #include <BluetoothSerial.h>
 #include <ESP32Servo.h>
 #include <Ds1302.h>
+#include <SevSeg.h>
 
 #include "command.h"
 #include "drop.h"
@@ -9,25 +10,26 @@
 
 #define BT_NAME "Pawfedly"
 
-#define PIN_CLK_RST 16
-#define PIN_CLK_DAT 17
-#define PIN_CLK_CLK 5
-#define PIN_SERVO 2
-#define PIN_BUZZER 4
+#define PIN_CLK_RST 23
+#define PIN_CLK_DAT 22
+#define PIN_CLK_CLK 1
+#define PIN_SERVO 15
+#define PIN_BUZZER 2
 #define PIN_ROM_DAT 18
 #define PIN_ROM_CLK 19
-#define PIN_SND_ECH 13
-#define PIN_SND_TRG 12
+#define PIN_SND_ECH 21
+#define PIN_SND_TRG 3
 
-static int SEGMENT_PINS[8] = {27, 32, 36, 34, 35, 22};
-static int DIGIT_PINS[4] = {14, 25, 33, 23};
+static unsigned char SEGMENT_PINS[8] = {13, 12, 14, 27, 26, 25, 33, 32};
+static unsigned char DIGIT_PINS[4] = {4, 16, 17, 5};
 
 static Servo servo;
+static SevSeg sevseg;
 static CommandHandler handler;
 static Ds1302 rtc(PIN_CLK_RST, PIN_CLK_CLK, PIN_CLK_DAT);
 static BuzzerController buzzer_controller(melody, NOTES, PIN_BUZZER);
 static DropController drop_controller(rtc, servo, buzzer_controller);
-static SegmentDisplay segment_display(rtc, DIGIT_PINS, SEGMENT_PINS);
+static SegmentDisplay segment_display(rtc, sevseg);
 
 Ds1302::DateTime parse_time(const char* time_str) {
   Ds1302::DateTime now;
@@ -100,7 +102,6 @@ void set_schedule(int argc, char* argv[]) {
   drop_controller.set_schedule(argc - 1, schedule);
 }
 
-
 void get_schedule(int argc, char* argv[]) {
   char buffer[50];
   Ds1302::DateTime schedule[10];
@@ -140,11 +141,14 @@ void setup() {
   // Initialize the servo
   servo.attach(PIN_SERVO);
 
+  // buzzer controller
+  buzzer_controller.init();
+
   // Initialize the drop controller
   drop_controller.init();
 
   // Initialize clock
-  segment_display.init();
+  segment_display.init(DIGIT_PINS, SEGMENT_PINS);
 
   // Initialize the command handler
   handler.subscribe("echo", echo);
